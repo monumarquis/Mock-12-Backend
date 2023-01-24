@@ -3,6 +3,7 @@ const express = require("express");
 const app = express.Router();
 
 app.get("/", async (req, res) => {
+  const {contract}=req.query
   let Jobs = await JobsModel.find({});
   return res.status(200).send(Jobs);
 });
@@ -42,6 +43,7 @@ app.patch("/", async (req, res) => {
 
 app.delete("/", async (req, res) => {
   const { JobId} = req.body
+  console.log(req.body);
   if(!JobId) return res.status(403).send({message:"Request Not Found"})
   let Jobs = await JobsModel.findByIdAndDelete(JobId);
   return res.status(200).send({message:"This Job Entry Has Been Deleted"});

@@ -4,16 +4,15 @@ const cors = require("cors");
 const connect = require("./config/db");
 const app = express();
 const User = require("./features/user/user.route");
-const product = require("./features/product/product.route");
-const cart = require("./features/cart/cart.route");
+const product = require("./features/jobs/jobs.route");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", User);
-app.use("/products", product);
-app.use("/cart", cart);
+app.use("/jobs", product);
+
 
 const PORT = process.env.PORT || 8080;
 

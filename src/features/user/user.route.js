@@ -13,15 +13,15 @@ app.get('/',async (req,res)=>{
 
 // signup route
 app.post('/signup',async (req,res)=>{
-    const { username, email, password } = req.body
-    if(!username || !email || !password ) return res.status(403).send({message:"Please Enter All Credential"})
+    const { role, email, password,fullname } = req.body
+    if(!fullname || !email || !password||!role ) return res.status(403).send({message:"Please Enter All Credential"})
 
     const exsist = await userModel.findOne({ email })
     if(exsist) return res.status(404).send({message:"User Already Created Try Logging in"})
 
     console.log(req.body);
     const hash = bcrypt.hashSync(password, 10);
-    const user = await  userModel({  username, email, password:hash });
+    const user = await  userModel({  fullname, email, password:hash,role });
                  user.save()
   
     return res.status(201).send({user,message:"You have Signup Successfully"});
@@ -38,8 +38,8 @@ app.post('/login',async (req,res)=>{
     return res.status(403).send({message:"Please Enter All Credentials"});
   }
   const User = await userModel.findOne({ email })
- // console.log(User)
-//  if (!User) return res.status(404).send("User Not Found");
+
+ if (!User) return res.status(404).send("User Not Found");
 
   try {
     const match = bcrypt.compareSync(password, User.password);
@@ -49,9 +49,10 @@ app.post('/login',async (req,res)=>{
       const token = jwt.sign(
         {
           _id: User.id,
-          username: User.username,
+          username: User.fullname,
           email:User.email,
           password: User.password,
+          role:User.role
         },
         SECRET_TOKEN,
         {
@@ -72,7 +73,7 @@ app.post('/login',async (req,res)=>{
       );
       return res
         .status(200)
-        .send({ message: "Login Successfully", token, refresh_token});
+        .send({ message: "Login Successfully", token, role:User.role});
     } else {
       return res.status(401).send({ message: "Invalid Credentials" });
     }
